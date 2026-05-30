@@ -1,0 +1,9 @@
+{
+    name = "My Project",
+    version = "1.0.0",
+    main = "scripts/main.lua",
+    assets = "assets/",
+    libraries = { },
+    build_output = "build/game",
+    cross_compile_windows = false
+}

@@ -753,7 +753,7 @@ void Editor::DrawProjectContent() {
     static ProjectManifest proj;
     static bool loaded = false;
     if (!loaded) {
-        proj.Load("project.planet");
+        proj.Load("manifest.plm");
         loaded = true;
     }
 

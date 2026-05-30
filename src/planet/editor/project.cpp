@@ -4,109 +4,168 @@
 
 namespace planet {
 
-static std::string EscapeJson(const std::string& s) {
+static std::string Escape(const std::string& s) {
     std::string out;
     out.reserve(s.size() + 2);
     for (char c : s) {
         switch (c) {
             case '"': out += "\\\""; break;
             case '\\': out += "\\\\"; break;
-            case '\n': out += "\\n"; break;
-            case '\t': out += "\\t"; break;
             default: out += c;
         }
     }
     return out;
 }
 
+static std::string Unescape(const std::string& s) {
+    std::string out;
+    for (size_t i = 0; i < s.size(); i++) {
+        if (s[i] == '\\' && i + 1 < s.size()) {
+            i++;
+            out += s[i];
+        } else {
+            out += s[i];
+        }
+    }
+    return out;
+}
+
+static std::string Trim(const std::string& s) {
+    size_t start = 0;
+    while (start < s.size() && (s[start] == ' ' || s[start] == '\t' || s[start] == '\r')) start++;
+    size_t end = s.size();
+    while (end > start && (s[end-1] == ' ' || s[end-1] == '\t' || s[end-1] == '\r')) end--;
+    return s.substr(start, end - start);
+}
+
+static std::string Quote(const std::string& s) {
+    return "\"" + Escape(s) + "\"";
+}
+
 std::string ProjectManifest::Serialize(const ProjectManifest& m) {
     std::ostringstream ss;
     ss << "{\n";
-    ss << "  \"name\": \"" << EscapeJson(m.name) << "\",\n";
-    ss << "  \"version\": \"" << EscapeJson(m.version) << "\",\n";
-    ss << "  \"mainScript\": \"" << EscapeJson(m.mainScript) << "\",\n";
-    ss << "  \"libraries\": [";
+    ss << "    name = " << Quote(m.name) << ",\n";
+    ss << "    version = " << Quote(m.version) << ",\n";
+    ss << "    main = " << Quote(m.mainScript) << ",\n";
+    ss << "    assets = " << Quote(m.assetPaths.empty() ? "assets/" : m.assetPaths[0]) << ",\n";
+
+    ss << "    libraries = {";
     for (size_t i = 0; i < m.libraries.size(); i++) {
         if (i > 0) ss << ", ";
-        ss << "\"" << EscapeJson(m.libraries[i]) << "\"";
+        ss << Quote(m.libraries[i]);
     }
-    ss << "],\n";
-    ss << "  \"assetPaths\": [";
-    for (size_t i = 0; i < m.assetPaths.size(); i++) {
-        if (i > 0) ss << ", ";
-        ss << "\"" << EscapeJson(m.assetPaths[i]) << "\"";
-    }
-    ss << "],\n";
-    ss << "  \"buildOutput\": \"" << EscapeJson(m.buildOutput) << "\",\n";
-    ss << "  \"crossCompileWindows\": " << (m.crossCompileWindows ? "true" : "false") << "\n";
+    ss << " },\n";
+
+    ss << "    build_output = " << Quote(m.buildOutput) << ",\n";
+    ss << "    cross_compile_windows = " << (m.crossCompileWindows ? "true" : "false") << "\n";
     ss << "}\n";
     return ss.str();
 }
 
-ProjectManifest ProjectManifest::Deserialize(const std::string& json) {
+ProjectManifest ProjectManifest::Deserialize(const std::string& data) {
     ProjectManifest m;
+
     auto findStr = [&](const std::string& key) -> std::string {
-        auto pos = json.find("\"" + key + "\"");
-        if (pos == std::string::npos) return {};
-        pos = json.find('"', pos + key.size() + 3);
-        if (pos == std::string::npos) return {};
-        std::string val;
-        pos++;
-        while (pos < json.size() && json[pos] != '"') {
-            if (json[pos] == '\\' && pos + 1 < json.size()) {
+        size_t pos = 0;
+        while (true) {
+            pos = data.find(key, pos);
+            if (pos == std::string::npos) return {};
+            // check it's a whole-word match: preceded by whitespace or start
+            if (pos > 0 && data[pos-1] != ' ' && data[pos-1] != '\t' && data[pos-1] != '\n') {
                 pos++;
-                if (json[pos] == 'n') val += '\n';
-                else if (json[pos] == 't') val += '\t';
-                else val += json[pos];
-            } else {
-                val += json[pos];
+                continue;
             }
+            // skip key and look for =
+            pos = data.find('=', pos + key.size());
+            if (pos == std::string::npos) return {};
             pos++;
-        }
-        return val;
-    };
-    auto findArr = [&](const std::string& key) -> std::vector<std::string> {
-        std::vector<std::string> arr;
-        auto pos = json.find("\"" + key + "\"");
-        if (pos == std::string::npos) return arr;
-        pos = json.find('[', pos);
-        if (pos == std::string::npos) return arr;
-        pos++;
-        while (pos < json.size() && json[pos] != ']') {
-            while (pos < json.size() && json[pos] != '"' && json[pos] != ']') pos++;
-            if (pos >= json.size() || json[pos] == ']') break;
+            // skip whitespace
+            while (pos < data.size() && (data[pos] == ' ' || data[pos] == '\t')) pos++;
+            if (pos >= data.size()) return {};
+            if (data[pos] != '"') return {};
             pos++;
             std::string val;
-            while (pos < json.size() && json[pos] != '"') {
-                if (json[pos] == '\\' && pos + 1 < json.size()) {
+            while (pos < data.size() && data[pos] != '"') {
+                if (data[pos] == '\\' && pos + 1 < data.size()) {
                     pos++;
-                    val += json[pos];
+                    val += data[pos];
                 } else {
-                    val += json[pos];
+                    val += data[pos];
                 }
                 pos++;
             }
-            arr.push_back(val);
-            pos++;
+            return val;
         }
-        return arr;
     };
+
     auto findBool = [&](const std::string& key, bool def) -> bool {
-        auto pos = json.find("\"" + key + "\"");
-        if (pos == std::string::npos) return def;
-        auto tpos = json.find("true", pos);
-        auto fpos = json.find("false", pos);
-        if (tpos != std::string::npos && (fpos == std::string::npos || tpos < fpos)) return true;
-        return false;
+        size_t pos = 0;
+        while (true) {
+            pos = data.find(key, pos);
+            if (pos == std::string::npos) return def;
+            if (pos > 0 && data[pos-1] != ' ' && data[pos-1] != '\t' && data[pos-1] != '\n') {
+                pos++;
+                continue;
+            }
+            // check for true/false after the key
+            size_t eq = data.find('=', pos + key.size());
+            if (eq == std::string::npos) return def;
+            std::string rest = data.substr(eq + 1);
+            if (rest.find("true") != std::string::npos) return true;
+            return false;
+        }
+    };
+
+    auto findArr = [&](const std::string& key) -> std::vector<std::string> {
+        std::vector<std::string> arr;
+        size_t pos = 0;
+        while (true) {
+            pos = data.find(key, pos);
+            if (pos == std::string::npos) return arr;
+            if (pos > 0 && data[pos-1] != ' ' && data[pos-1] != '\t' && data[pos-1] != '\n') {
+                pos++;
+                continue;
+            }
+            size_t eq = data.find('=', pos + key.size());
+            if (eq == std::string::npos) return arr;
+            size_t brace = data.find('{', eq);
+            if (brace == std::string::npos) return arr;
+            brace++;
+            while (brace < data.size() && data[brace] != '}') {
+                while (brace < data.size() && data[brace] != '"' && data[brace] != '}') brace++;
+                if (brace >= data.size() || data[brace] == '}') break;
+                brace++;
+                std::string val;
+                while (brace < data.size() && data[brace] != '"') {
+                    if (data[brace] == '\\' && brace + 1 < data.size()) {
+                        brace++;
+                        val += data[brace];
+                    } else {
+                        val += data[brace];
+                    }
+                    brace++;
+                }
+                arr.push_back(val);
+                brace++;
+            }
+            return arr;
+        }
     };
 
     m.name = findStr("name");
     m.version = findStr("version");
-    m.mainScript = findStr("mainScript");
+    m.mainScript = findStr("main");
+
+    std::string assets = findStr("assets");
+    if (!assets.empty()) {
+        m.assetPaths.clear();
+        m.assetPaths.push_back(assets);
+    }
+
     m.libraries = findArr("libraries");
-    m.assetPaths = findArr("assetPaths");
-    m.buildOutput = findStr("buildOutput");
-    m.crossCompileWindows = findBool("crossCompileWindows", false);
+    m.buildOutput = findStr("build_output");
+    m.crossCompileWindows = findBool("cross_compile_windows", false);
 
     if (m.name.empty()) m.name = "Untitled";
     if (m.version.empty()) m.version = "1.0.0";

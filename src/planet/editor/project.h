@@ -21,7 +21,7 @@ struct ProjectManifest {
     bool SaveAs(const std::string& path);
 
     static std::string Serialize(const ProjectManifest& m);
-    static ProjectManifest Deserialize(const std::string& json);
+    static ProjectManifest Deserialize(const std::string& data);
 };
 
 } // namespace planet

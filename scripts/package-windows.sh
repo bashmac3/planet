@@ -18,7 +18,6 @@ cp "$BUILD_DIR"/libstdc++-6.dll "$DIST_DIR/"
 cp "$BUILD_DIR"/libwinpthread-1.dll "$DIST_DIR/"
 
 # Copy project files
-cp "$BUILD_DIR/project.planet" "$DIST_DIR/"
 cp "$BUILD_DIR/manifest.plm" "$DIST_DIR/"
 
 # Copy directories

@@ -276,24 +276,21 @@ Lines with the same `objectName` define a single object. Named objects become te
 
 ## Configuration
 
-The engine loads `project.planet` from the working directory. Example:
+The engine loads `manifest.plm` from the project directory. Example:
 
-```ini
-[project]
-name = My Project
-main_script = scripts/main.lua
-asset_path = assets/
-
-[window]
-width = 1280
-height = 720
-title = Planet Engine
-fullscreen = false
-vsync = false
-
-[console]
-enabled = true
+```lua
+{
+    name = "My Project",
+    version = "1.0.0",
+    main = "scripts/main.lua",
+    assets = "assets/",
+    libraries = { },
+    build_output = "build/game",
+    cross_compile_windows = false
+}
 ```
+
+Window and console configuration is handled via command-line arguments or Lua API, not the manifest file.
 
 ## Building
 
