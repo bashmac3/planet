@@ -1,0 +1,52 @@
+// Maze game configuration
+// Load from Lua: dexeclInvoke("dexecl/config.dexl")
+// Tweak at runtime: cr_var <name> <value>
+
+// World
+set cell_size 3.0
+set wall_height 3.0
+set wall_thickness 0.15
+
+// Player
+set player_speed 6.0
+set player_sensitivity 0.002
+set player_radius 0.3
+set player_max_hp 100
+set player_hp_regen 8
+
+// Level
+set level_start_cells 36
+set level_cells_per_level 2
+set level_max_cells 400
+set level_min_cells 36
+set cell_shrink_per_200 0.3
+
+// Enemies
+set enemy_speed_mult 0.5
+set enemy_hit_damage 15
+set enemy_hit_range 0.8
+set enemy_hit_cooldown 0.3
+set enemy_spawn_chance_denom 7
+
+// Lighting
+set ambient_r_start 0.35
+set ambient_g_start 0.38
+set ambient_b_start 0.45
+set ambient_r_end 0.06
+set ambient_g_end 0.06
+set ambient_b_end 0.08
+set light_r_start 1.0
+set light_g_start 0.95
+set light_b_start 0.85
+set light_r_end 0.15
+set light_g_end 0.12
+set light_b_end 0.10
+set fog_density_start 0
+set fog_density_end 0.06
+
+// Dark level
+set dark_level_chance_base 0.2
+set dark_level_chance_growth 0.02
+
+// Misc
+set floor_tile_size 2.0

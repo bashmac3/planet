@@ -1,0 +1,9 @@
+{
+    "name": "My Project",
+    "version": "1.0.0",
+    "mainScript": "scripts/main.lua",
+    "libraries": [],
+    "assetPaths": ["assets/"],
+    "buildOutput": "builds/game",
+    "crossCompileWindows": false
+}

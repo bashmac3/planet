@@ -1,0 +1,59 @@
+# Build directories
+build/
+build2/
+build-mingw/
+build_win/
+build_*/
+bin/
+
+# CMake generated files
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+CMakeConfigureLog.yaml
+CMakeRuleHashes.txt
+CTestTestfile.cmake
+CMakeFiles/
+cmake-build-*/
+*.cmake
+
+# Compiled libraries and objects
+*.a
+*.o
+*.o.d
+*.obj
+*.lib
+*.exp
+*.dll
+*.so
+*.dylib
+
+# Distribution build artifacts
+dist/*.kerdata
+dist/*.tar.gz
+dist/*.zip
+dist/linux/
+dist/windows/
+dist/planet-linux/
+dist/planet-windows/
+
+# Qt generated files
+.qt/
+
+# Logs
+*.log
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+imgui.ini
+
+# macOS
+.DS_Store
+
+# OSXCross submodule (build artifacts)
+osxcross-git/target/
+osxcross-git/build/

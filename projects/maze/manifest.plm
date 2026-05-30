@@ -1,0 +1,7 @@
+{
+    name = "maze",
+    version = "1.0",
+    main = "scripts/main.lua",
+    assets = "assets/",
+    scripts = "scripts/"
+}
