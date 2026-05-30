@@ -67,7 +67,31 @@ cd build/bin && ./planet
 
 Управление: WASD — движение, Мышь — осмотр, Tab — захват мыши, `ё/Backtick` — консоль, Escape — выход.
 
-### Кросс-компиляция под Windows
+### Нативная сборка под Windows
+
+Требуется **Visual Studio 2022** (или 2019) с нагрузкой "Разработка классических приложений на C++", или **MinGW-w64** (UCRT64/MSYS2).
+
+Установка зависимостей через vcpkg:
+
+```powershell
+git clone https://github.com/Microsoft/vcpkg.git
+cd vcpkg && .\bootstrap-vcpkg.bat
+.\vcpkg install glfw3 openal-soft
+cd ..\planet
+cmake -B build -DCMAKE_TOOLCHAIN_FILE=..\vcpkg\scripts\buildsystems\vcpkg.cmake
+cmake --build build
+```
+
+Или установите GLFW и OpenAL вручную через официальные установщики, затем:
+
+```powershell
+cmake -B build
+cmake --build build
+```
+
+Игра и ассеты — в `build\bin\`.
+
+### Кросс-компиляция под Windows (из Linux)
 
 ```bash
 cmake -B build-mingw -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-w64-toolchain.cmake -DPLANET_BUILD_WINDOWS=ON

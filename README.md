@@ -67,7 +67,31 @@ cd build/bin && ./planet
 
 Controls: WASD — move, Mouse — look, Tab — toggle mouse capture, Backtick — console, Escape — quit.
 
-### Cross-compile for Windows
+### Native build on Windows
+
+Requires **Visual Studio 2022** (or 2019) with "Desktop development with C++" workload, or **MinGW-w64** (UCRT64/MSYS2).
+
+Using vcpkg to install dependencies:
+
+```powershell
+git clone https://github.com/Microsoft/vcpkg.git
+cd vcpkg && .\bootstrap-vcpkg.bat
+.\vcpkg install glfw3 openal-soft
+cd ..\planet
+cmake -B build -DCMAKE_TOOLCHAIN_FILE=..\vcpkg\scripts\buildsystems\vcpkg.cmake
+cmake --build build
+```
+
+Or install GLFW and OpenAL manually from their official installers, then:
+
+```powershell
+cmake -B build
+cmake --build build
+```
+
+The maze game and its assets will be in `build\bin\`.
+
+### Cross-compile for Windows (from Linux)
 
 ```bash
 cmake -B build-mingw -DCMAKE_TOOLCHAIN_FILE=cmake/mingw-w64-toolchain.cmake -DPLANET_BUILD_WINDOWS=ON
