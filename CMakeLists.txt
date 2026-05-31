@@ -239,7 +239,10 @@ else()
     )
 endif()
 
-file(COPY projects/example/ DESTINATION "${CMAKE_BINARY_DIR}/bin")
+file(GLOB PROJECT_DIRS RELATIVE "${CMAKE_SOURCE_DIR}/projects" "${CMAKE_SOURCE_DIR}/projects/*")
+foreach(proj ${PROJECT_DIRS})
+    file(COPY "${CMAKE_SOURCE_DIR}/projects/${proj}/" DESTINATION "${CMAKE_BINARY_DIR}/bin")
+endforeach()
 file(COPY fonts/ DESTINATION "${CMAKE_BINARY_DIR}/bin")
 
 # Package target for Windows distribution
@@ -251,10 +254,7 @@ if(PLANET_BUILD_WINDOWS AND NOT TARGET package_windows)
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/bin/libgcc_s_seh-1.dll" "${CMAKE_BINARY_DIR}/dist/planet-windows/"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/bin/libstdc++-6.dll" "${CMAKE_BINARY_DIR}/dist/planet-windows/"
         COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/bin/libwinpthread-1.dll" "${CMAKE_BINARY_DIR}/dist/planet-windows/"
-        COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_BINARY_DIR}/bin/manifest.plm" "${CMAKE_BINARY_DIR}/dist/planet-windows/"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/projects/example/assets" "${CMAKE_BINARY_DIR}/dist/planet-windows/assets"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/projects/example/scripts" "${CMAKE_BINARY_DIR}/dist/planet-windows/scripts"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/bin/dexecl" "${CMAKE_BINARY_DIR}/dist/planet-windows/dexecl"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_BINARY_DIR}/bin" "${CMAKE_BINARY_DIR}/dist/planet-windows"
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/fonts" "${CMAKE_BINARY_DIR}/dist/planet-windows/fonts"
         COMMAND ${CMAKE_COMMAND} -E tar cf "${CMAKE_BINARY_DIR}/dist/planet-windows.tar.gz" --format=gnutar "${CMAKE_BINARY_DIR}/dist/planet-windows"
         COMMENT "Creating Windows distribution package"
