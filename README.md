@@ -24,7 +24,7 @@ A minimal, Lua-scriptable 3D/2D game engine with an OpenGL renderer, ECS, physic
 - ✅ Audio playback (OpenAL on Linux/macOS, OpenAL on Windows)
 - ✅ Physics simulation
 - ✅ Post-processing effects
-- ✅ Maze game project (WASD movement, random maze generation, enemy AI)
+- ✅ Example game — maze (WASD movement, random maze generation, enemy AI)
 - ✅ Cross-compilation: Linux (native), Windows (MinGW), macOS (ARM64)
 - ✅ Font rendering with TTF fallback to built-in bitmap font
 - ✅ Sprite and text overlay rendering
@@ -58,10 +58,10 @@ cmake -B build
 make -C build -j$(nproc)
 ```
 
-### Run the maze game
+### Run the example game
 
 ```bash
-cp -r projects/maze/* build/bin/
+cp -r projects/example/* build/bin/
 cd build/bin && ./planet
 ```
 
@@ -114,8 +114,7 @@ make -C build -j$(sysctl -n hw.ncpu) planet
 ├── cmake/                  # CMake toolchain files
 ├── fonts/                  # Bundled font files
 ├── projects/               # Game projects
-│   ├── maze/               # Maze game (primary distributable)
-│   └── myproject/          # Template project
+│   └── example/            # Example maze game
 ├── scripts/                # Build helper scripts
 ├── src/
 │   ├── main.cpp            # Entry point

@@ -61,7 +61,7 @@ make -C build -j$(nproc)
 ### Запуск игры-лабиринта
 
 ```bash
-cp -r projects/maze/* build/bin/
+cp -r projects/example/* build/bin/
 cd build/bin && ./planet
 ```
 
@@ -114,8 +114,7 @@ make -C build -j$(sysctl -n hw.ncpu) planet
 ├── cmake/                  # Toolchain файлы CMake
 ├── fonts/                  # Встроенные шрифты
 ├── projects/               # Игровые проекты
-│   ├── maze/               # Игра-лабиринт
-│   └── myproject/          # Шаблон проекта
+│   └── example/            # Пример игры-лабиринта
 ├── scripts/                # Вспомогательные скрипты
 ├── src/
 │   ├── main.cpp            # Точка входа
